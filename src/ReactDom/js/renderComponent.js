@@ -8,6 +8,10 @@ export default function createComponent(component) {
     }
 
     base = createElement(component.render())
+    
+    if(component.props.key) {
+        base.setAttribute('key', component.props.key)
+    }
 
     if(component.base) {
         component.componentDidUpdate && component.componentDidUpdate()

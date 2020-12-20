@@ -3,10 +3,11 @@ export const ATTR_KEY = '__preprops_'
 export function setAttribute(elm, name, value) {
     if(name === 'className') name = 'class'
 
+    if (name in elm) {
+        elm[name] = value
+    }
     if(/on\w+/.test(name)){
         name = name.toLowerCase()
-        elm[name] = value
-    } else if (name in elm) {
         elm[name] = value
     } else if (name == 'style') {
         if(!value || typeof value === 'string') {
