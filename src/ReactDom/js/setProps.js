@@ -3,9 +3,6 @@ export const ATTR_KEY = '__preprops_'
 export function setAttribute(elm, name, value) {
     if(name === 'className') name = 'class'
 
-    if (name in elm) {
-        elm[name] = value
-    }
     if(/on\w+/.test(name)){
         name = name.toLowerCase()
         elm[name] = value
@@ -17,10 +14,15 @@ export function setAttribute(elm, name, value) {
                 elm.style[name] = value[name]
             }
         }
-    } else if(value) {
-        elm.setAttribute(name, value)
     } else {
-        elm.removeAttribute(name)
+        if (name in elm) {
+            elm[name] = value
+        }
+        if(value) {
+            elm.setAttribute(name, value)
+        } else {
+            elm.removeAttribute(name)
+        }
     }
 }
 

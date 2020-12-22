@@ -1,7 +1,7 @@
-export default function createElement(tag, attrs, ...children) {
+export default function createElement(tag, props, ...children) {
     return {
         tag,
-        attrs: attrs || {},
+        props: props || {},
         children: flatArr(children)
     }
 }

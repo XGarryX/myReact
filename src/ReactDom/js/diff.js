@@ -6,16 +6,20 @@ const NODE = {
     TEXT_NODE: 3
 }
 
-export default function diff(dom, newVdom, parent, index) {
+export default function diff(dom, newVdom, parent) {
+    if(typeof newVdom == 'object' && typeof newVdom.tag == 'function') {
+        
+    }
+
     if(dom === undefined) {
         let childNodes = parent.childNodes,
             length = childNodes.length
         dom = createElement(newVdom)
-        if(length > 0 && index < length - 1) {
-            parent.insertBefore(dom, childNodes[index])
-        } else {
+        // if(length > 0 && index < length - 1) {
+        //     parent.insertBefore(dom, childNodes[index])
+        // } else {
             parent.appendChild(dom)
-        }
+        //}
         return false
     }
 
@@ -30,7 +34,7 @@ export default function diff(dom, newVdom, parent, index) {
     } 
 
     if(dom.nodeType === NODE.ELEMENT_NODE) {
-        diffProps(dom, newVdom.attrs)
+        diffProps(dom, newVdom.props)
 
         diffChildren(newVdom.children, dom)
     }
@@ -77,7 +81,7 @@ function diffChildren(vchildren = [], parent) {
 
     for(let i = 0; i < vchildren.length; i++) {
         let vchild = vchildren[i],
-            key = vchild.attrs ? vchild.attrs.key : undefined
+            key = vchild.props ? vchild.props.key : undefined
 
         let dom
 

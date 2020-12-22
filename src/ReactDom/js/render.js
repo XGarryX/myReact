@@ -7,23 +7,25 @@ export default function render(vdom, container) {
 }
 
 export function createElement(vdom) {
-    if(vdom === undefined || vdom === null || typeof vdom === 'boolean') vdom = ''
-
     if(typeof vdom === 'string' || typeof vdom === 'number') {
         return document.createTextNode(vdom)
     }
 
     if(typeof vdom.tag === 'function') {
-        let component = createComponent(vdom.tag, vdom.attrs)
+        let props = Object.assign({}, vdom.props, {
+            children: vdom.children
+        })
 
-        setComponentProps(component, vdom.attrs)
+        let component = createComponent(vdom.tag, props)
+
+        setComponentProps(component, props)
 
         return component.base
     }
 
     let elm = document.createElement(vdom.tag)
 
-    setProps(elm, vdom.attrs)
+    setProps(elm, vdom.props)
 
     vdom.children.forEach(child => render(child, elm))
 
