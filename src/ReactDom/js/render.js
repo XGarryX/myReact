@@ -1,33 +1,44 @@
 import setProps from './setProps'
-import createComponent from './createComponent'
 import setComponentProps from './setComponentProps'
+import renderComponent from './renderComponent'
+import { Component } from '../../React'
 
 export default function render(vdom, container) {
     return container.appendChild(createElement(vdom))
 }
 
-export function createElement(vdom) {
+export function createElement(vdom, constructor) {
     if(typeof vdom === 'string' || typeof vdom === 'number') {
         return document.createTextNode(vdom)
     }
 
-    if(typeof vdom.tag === 'function') {
-        let props = Object.assign({}, vdom.props, {
-            children: vdom.children
+    let { tag, props, children } = vdom
+
+    if(typeof tag === 'function') {
+        props = Object.assign({}, props, {
+            children
         })
 
-        let component = createComponent(vdom.tag, props)
+        if(Object.getPrototypeOf(tag) === Component) {
+            let component = new tag(props)
 
-        setComponentProps(component, props)
+            setComponentProps(component, props)
 
-        return component.base
+            return renderComponent(component)
+        } else {
+            return createElement(tag(props), tag)
+        }
     }
 
-    let elm = document.createElement(vdom.tag)
+    let elm = document.createElement(tag)
 
-    setProps(elm, vdom.props)
+    if(constructor) {
+        elm._componentConstructor = constructor
+    }
 
-    vdom.children.forEach(child => render(child, elm))
+    setProps(elm, props)
+
+    children.forEach(child => render(child, elm))
 
     return elm
 }

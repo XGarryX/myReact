@@ -24,6 +24,11 @@ export default function createComponent(component) {
     }
 
     component.base = base
+
+    base._component = component
+    base._componentConstructor = component.constructor
+
+    return base
 }
 
 function isObject(obj) {

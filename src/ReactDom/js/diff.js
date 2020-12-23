@@ -1,4 +1,5 @@
-import { createElement } from './render'
+import { Component } from '../../React'
+import { createElement, setCompontProps, renderComponent } from './render'
 import { ATTR_KEY, setAttribute } from './setProps'
 
 const NODE = {
@@ -8,18 +9,23 @@ const NODE = {
 
 export default function diff(dom, newVdom, parent) {
     if(typeof newVdom == 'object' && typeof newVdom.tag == 'function') {
-        
+        let { tag, props, children } = newVdom
+        if(Object.getPrototypeOf(tag) == Component) {
+            props = Object.assign({}, props, {
+                children
+            })
+
+            let component = new tag(props)
+            setCompontProps(component, props)
+            
+            return false
+        }
     }
 
     if(dom === undefined) {
-        let childNodes = parent.childNodes,
-            length = childNodes.length
         dom = createElement(newVdom)
-        // if(length > 0 && index < length - 1) {
-        //     parent.insertBefore(dom, childNodes[index])
-        // } else {
-            parent.appendChild(dom)
-        //}
+
+        parent.appendChild(dom)
         return false
     }
 
@@ -123,6 +129,10 @@ function diffChildren(vchildren = [], parent) {
 }
 
 function isSameType(dom, newVdom) {
+    if(typeof newVdom.tag === 'function') {
+        return dom._componentConstructor == newVdom.tag
+    }
+
     let elmType = dom.nodeType
     let vdomType = typeof newVdom
 

@@ -5,3 +5,5 @@ export default {
     createElement,
     Component
 }
+
+export { createElement, Component }

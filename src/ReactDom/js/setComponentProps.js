@@ -1,5 +1,3 @@
-import renderComponent from './renderComponent'
-
 export default function setComponentProps(component, props) {
     if(!component.base) {
         component.componentWillMount && component.componentWillMount()
@@ -8,6 +6,4 @@ export default function setComponentProps(component, props) {
     }
 
     component.props = props
-
-    renderComponent(component)
 }
