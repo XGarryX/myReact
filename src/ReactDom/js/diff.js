@@ -1,5 +1,5 @@
 import { Component } from '../../React'
-import { createElement, setCompontProps, renderComponent } from './render'
+import { createElement } from './render'
 import { ATTR_KEY, setAttribute } from './setProps'
 
 const NODE = {
@@ -7,23 +7,39 @@ const NODE = {
     TEXT_NODE: 3
 }
 
-export default function diff(dom, newVdom, parent) {
+export default function diff(dom, newVdom, parent, componentInst) {
     if(typeof newVdom == 'object' && typeof newVdom.tag == 'function') {
         let { tag, props, children } = newVdom
+        props = Object.assign({}, props, {
+            children
+        })
         if(Object.getPrototypeOf(tag) == Component) {
-            props = Object.assign({}, props, {
-                children
-            })
+            let component = new constructor(props)
+            newVdom = component.render()
 
-            let component = new tag(props)
-            setCompontProps(component, props)
-            
-            return false
+            if(dom && dom._component) {
+                dom._component.props = props
+            }
+
+            return diff(dom, newVdom, parent, component)
+        } else {
+            newVdom = tag(props)
+
+            if(props.key !== undefined) {
+                newVdom.props.key = props.key
+            }
+
+            return diff(dom, newVdom, parent)
         }
     }
 
     if(dom === undefined) {
         dom = createElement(newVdom)
+
+        if(componentInst) {
+            dom._component = componentInst
+            dom._componentConstructor = componentInst.constructor
+        }
 
         parent.appendChild(dom)
         return false

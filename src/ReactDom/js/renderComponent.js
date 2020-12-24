@@ -1,28 +1,14 @@
 import { createElement } from './render'
 
-export default function createComponent(component) {
+export default function renderComponent(component) {
     let base
-
-    if(component.base && component.componentWillUpdate) {
-        component.componentWillUpdate()
-    }
 
     let vdom = component.render()
 
     deepMerge(vdom.props, component.props)
     
     base = createElement(vdom)
-
-    if(component.base) {
-        component.componentDidUpdate && component.componentDidUpdate()
-    } else {
-        component.componentDidMount && component.componentDidMount()
-    }
-
-    if(component.base && component.base.parentNode) {
-        component.base.parentNode.replaceChild(base, component.base)
-    }
-
+    
     component.base = base
 
     base._component = component

@@ -1,5 +1,4 @@
 import setProps from './setProps'
-import setComponentProps from './setComponentProps'
 import renderComponent from './renderComponent'
 import { Component } from '../../React'
 
@@ -22,11 +21,17 @@ export function createElement(vdom, constructor) {
         if(Object.getPrototypeOf(tag) === Component) {
             let component = new tag(props)
 
-            setComponentProps(component, props)
+            component.props = props
 
             return renderComponent(component)
         } else {
-            return createElement(tag(props), tag)
+            vdom = tag(props)
+            
+            if(props.key !== undefined) {
+                vdom.props.key = props.key
+            }
+
+            return createElement(vdom, tag)
         }
     }
 
